@@ -8,9 +8,30 @@ import numpy as np
 import statistics as st
 import datetime
 import sys
+import time
 
-# input the directory to the CBT_cleaned CSV file
-filepath = "C:/Users/camden/Downloads/FACT_054_V1_CBT - Copy(in).csv"
+# **BEFORE inputting the data into this script, make sure the csv file has the following features:
+# FIVE columns: 'index', 'Date hour' (change to 13:30 Time formatting), 
+# 'Date' (copied from the 'Date hour' column and reformatted using Date, m/hh/yyyy), 'Temperature', & 'State'
+
+#The original csv will allocate different saved pdfs of data into different columns. 
+# manually move ALL 'Temperature' and 'State' columns into only two columns
+
+#Delete all blocks of text in the file that are unrelated to the data inputs
+
+# Make sure pandas is downloaded. If you do not have pandas (an error will appear when you run the script if you don't have this package), 
+# type 'pip install pandas' into the python terminal.
+# create a file called 'requirements.txt' in the same location as this script.
+# Once pandas is downloaded, type 'pip freeze > requirements.txt' to store your packages
+
+def get_duration(duration):
+    hours = int(duration / 3600)
+    minutes = int(duration % 3600 / 60)
+    seconds = int((duration % 3600) % 60)
+    return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
+
+# input the directory to the CBT_Reorganized CSV file
+filepath = "C:/Users/camden/Downloads/FACT_054_V1_CBT_Reorganizing(in).csv"
 df = pd.read_csv(filepath)
 
 # define the start/end dates for the in-lab
@@ -19,6 +40,9 @@ end = '9/12/2025'
 
 # change the 'Date' column from dtype object to dtype datetime64[ns]
 df['Date'] = pd.to_datetime(df['Date'])
+#df['Date hour'] = pd.to_datetime(df['Date hour'])
+df['Time Stamp'] = df['Date'].astype(str) + ' ' + df['Date hour'].astype(str)
+df['Time Stamp'] = pd.to_datetime(df['Time Stamp'])
 
 # create a variable with only the correct in-lab date range
 correct_range = (df['Date'] >= start) & (df['Date'] <= end)
@@ -35,8 +59,40 @@ df = df.drop(df[df.State == 'Sync'].index)
 df = df.drop(['State', 'CorrectDate'], axis = 1)
 
 # sort dates chronologically
-df = df.sort_values(by = 'Date')
+df = df.sort_values(by = ['Date', 'Date hour'])
 
-# convert the dataframe back to a csv file using the file location path. 
+#Create the 'elapsed_time_hrs' variable -- this is needed to use the NOSA program
+time = df['Time Stamp'].tolist()
+time_elapsed = [0]
+for i in range(1, len(time)):
+    # Calling the current index time and subtracting it by the first timestamp recorded for the data
+    start = time[0]
+    finish = time[i]
+    duration = (finish - start).total_seconds()
+
+    # Calculating how many hours have passed between the current time and the first recorded time
+    elapsed_hours = get_duration(duration)
+
+    # Converting time elapsed to a decimal
+    hours, minutes, seconds = elapsed_hours.split(':')
+    hours = int(hours)
+    minutes = int(minutes)
+    seconds = int(seconds)
+
+    result = hours + (minutes / 60) + (seconds / 3600)
+    time_elapsed.append(result)
+
+# Create the hours elapsed variable -- variable name should not be changed from what is already provided
+df['elapsed_time_hrs'] = time_elapsed
+
+df = df.drop(['Time Stamp', 'index'], axis = 1)
+df = df.rename(columns = {'Temperature':'CTEMP'})
+
+sub_id = 'FACT_054_V1'
+df['SUBJECT_CODE'] = sub_id
+
+df = df[['SUBJECT_CODE', 'Date', 'Date hour', 'CTEMP', 'elapsed_time_hrs']]
+
+# Convert the dataframe back to a csv file using the file location path. Remember to use the path or else the file will go into the github repo 
 # file naming scheme should be 'FACT_0XX_VX_CBT_cleaned' (change for SAM as needed)
-df.to_csv("C:/Users/camden/Downloads/FACT_054_V1_CBT_cleaned.csv", index = False, )
+df.to_csv("C:/Users/camden/Downloads/FACT_054_V1_CBT_cleaned.csv", index = False)
