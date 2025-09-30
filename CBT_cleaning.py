@@ -12,7 +12,8 @@ import time
 
 # **BEFORE inputting the data into this script, make sure the csv file has the following features:
 # FIVE columns: 'index', 'Date hour' (change to 13:30 Time formatting), 
-# 'Date' (copied from the 'Date hour' column and reformatted using Date, m/hh/yyyy), 'Temperature', & 'State'
+# 'Date' (copied from the 'Date hour' column and reformatted using Date, m/hh/yyyy), 'Temperature', & 'State' (if the data has already been ceaned, don't include the 'State' variable)
+# Make sure there are no spaces in front of variable names
 
 #The original csv will allocate different saved pdfs of data into different columns. 
 # manually move ALL 'Temperature' and 'State' columns into only two columns
@@ -31,16 +32,20 @@ def get_duration(duration):
     return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
 
 # input the directory to the CBT_Reorganized CSV file
-filepath = "C:/Users/camden/Downloads/FACT_054_V1_CBT_Reorganizing(in).csv"
+filepath = "C:/Users/camden/Downloads/FACT_048_V1_CBT"
 df = pd.read_csv(filepath)
 
 # define the start/end dates for the in-lab
-start = '9/3/2025'
-end = '9/12/2025'
+start = '11/04/2024'
+end = '11/13/2024'
+
+# Drop rows with no data (there tend to be multiple empty rows at the bottom of these excel sheets)
+df = df.dropna(how = 'all')
 
 # change the 'Date' column from dtype object to dtype datetime64[ns]
 df['Date'] = pd.to_datetime(df['Date'])
-#df['Date hour'] = pd.to_datetime(df['Date hour'])
+
+# Create a timestamp column, this will help with calculating elapsed time later on
 df['Time Stamp'] = df['Date'].astype(str) + ' ' + df['Date hour'].astype(str)
 df['Time Stamp'] = pd.to_datetime(df['Time Stamp'])
 
@@ -52,10 +57,10 @@ df['CorrectDate'] = correct_range
 # drop all rows that are not from the in-lab
 df = df.drop(df[df.CorrectDate == False].index)
 
-# drop all rows that have no temperature data
+# drop all rows that have no temperature data -- comment this out if the variable was not included
 df = df.drop(df[df.State == 'Sync'].index)
 
-# drop rows that won't be needed for future analysis
+# drop rows that won't be needed for future analysis -- comment this out if the variable was not included
 df = df.drop(['State', 'CorrectDate'], axis = 1)
 
 # sort dates chronologically
@@ -85,14 +90,17 @@ for i in range(1, len(time)):
 # Create the hours elapsed variable -- variable name should not be changed from what is already provided
 df['elapsed_time_hrs'] = time_elapsed
 
+# Drop variables that won't be necessary for data analysis
 df = df.drop(['Time Stamp', 'index'], axis = 1)
 df = df.rename(columns = {'Temperature':'CTEMP'})
 
-sub_id = 'FACT_054_V1'
+# Enter the subject ID, should typically be 'FACT_0XX_VX'
+sub_id = 'FACT_048_V1'
 df['SUBJECT_CODE'] = sub_id
 
+#Rearrange columns
 df = df[['SUBJECT_CODE', 'Date', 'Date hour', 'CTEMP', 'elapsed_time_hrs']]
 
 # Convert the dataframe back to a csv file using the file location path. Remember to use the path or else the file will go into the github repo 
 # file naming scheme should be 'FACT_0XX_VX_CBT_cleaned' (change for SAM as needed)
-df.to_csv("C:/Users/camden/Downloads/FACT_054_V1_CBT_cleaned.csv", index = False)
+df.to_csv("C:/Users/camden/Downloads/CBT_cleaned/FACT_048_V1_CBT_cleaned.csv", index = False)
