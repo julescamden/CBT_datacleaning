@@ -32,12 +32,12 @@ def get_duration(duration):
     return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
 
 # input the directory to the CBT_Reorganized CSV file
-filepath = "C:/Users/camden/Downloads/FACT_055_V1_CBT.csv"
+filepath = "C:/Users/camden/Downloads/SAM_015_CBT.csv"
 df = pd.read_csv(filepath)
 
 # define the start/end dates for the in-lab
-start = '8/12/2025'
-end = '8/21/2025'
+start = '9/16/2024'
+end = '9/24/2024'
 
 # Drop rows with no data (there tend to be multiple empty rows at the bottom of these excel sheets)
 df = df.dropna(how = 'all')
@@ -58,7 +58,8 @@ df['CorrectDate'] = correct_range
 df = df.drop(df[df.CorrectDate == False].index)
 
 # drop all rows that have no temperature data -- comment this out if the variable was not included
-df = df.drop(df[df.State == 'Sync'].index)
+df = df.rename(columns = {'Temperature':'CTEMP'})
+df = df.drop(df.loc[df['CTEMP'] == '-- , -- '].index)
 
 # drop rows that won't be needed for future analysis -- comment this out if the variable was not included
 df = df.drop(['State', 'CorrectDate'], axis = 1)
@@ -92,25 +93,14 @@ df['elapsed_time_hrs'] = time_elapsed
 
 # Drop variables that won't be necessary for data analysis
 df = df.drop(['Time Stamp', 'index'], axis = 1)
-df = df.rename(columns = {'Temperature':'CTEMP'})
 
 # Enter the subject ID, should typically be 'FACT_0XX_VX'
-sub_id = 'FACT_055_V1'
+sub_id = 'SAM_015'
 df['SUBJECT_CODE'] = sub_id
 
 #Rearrange columns
 df = df[['SUBJECT_CODE', 'Date', 'Date hour', 'CTEMP', 'elapsed_time_hrs']]
-max = df['elapsed_time_hrs'].max()
-print(max)
-# Calculate hourly temperature averages (will be helpful for time-series analysis)
-'''
-def hourlymean_cbt(df):
-    data = df
-    max = df['elapsed_time_hrs'].max()
-    data = data.reshape((1, 20))
-    print data.mean(axis=1)
-    return data.mean(axis=1)
-'''
+
 # Convert the dataframe back to a csv file using the file location path. Remember to use the path or else the file will go into the github repo 
 # file naming scheme should be 'FACT_0XX_VX_CBT_cleaned' (change for SAM as needed)
-#df.to_csv("C:/Users/camden/Downloads/CBT_cleaned/FACT_055_V1_CBT_cleaned.csv", index = False)
+df.to_csv("C:/Users/camden/Downloads/SAM_CBT_cleaned/SAM_015_CBT_cleaned.csv", index = False)
