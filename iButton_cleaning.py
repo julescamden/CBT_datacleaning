@@ -125,7 +125,7 @@ sub_id = 'FACT_054_V2'
 df['SUBJECT_CODE'] = sub_id
 
 #Rearrange columns
-df = df[['SUBJECT_CODE', 'Date', 'Date hour', 'CTEMP', 'elapsed_time_hrs']]
+df = df[['SUBJECT_CODE', 'Date', 'WP', 'Date hour', 'CTEMP', 'Placement', 'elapsed_time_hrs']]
 print(df)
 # Convert the dataframe back to a csv file using the file location path. Remember to use the path or else the file will go into the github repo 
 # file naming scheme should be 'FACT_0XX_VX_CBT_cleaned' (change for SAM as needed)

@@ -87,7 +87,7 @@ for i in range(len(date_intervals) - 1):
 
 #add the wake period
 hour['WP'] = hour['date'].map(WP)
-
+print(hour)
 #reformat the data for R analysis
 ok = pd.pivot_table(hour, index = ['time'], columns = ['WP'], values = ['CTEMP'])
 
@@ -114,4 +114,4 @@ hour = hour[['SUBJECT_CODE', 'visit', 'hour', 'date', 'time', 'CTEMP', 'interval
 '''
 
 # Save the data to a csv file
-ok.to_csv("C:/Users/camden/Downloads/SAM_CBT_cleaned/ts_format/SAM_028_CBT_ts_30min.csv", index = False)
+#ok.to_csv("C:/Users/camden/Downloads/SAM_CBT_cleaned/ts_format/SAM_028_CBT_ts_30min.csv", index = False)
