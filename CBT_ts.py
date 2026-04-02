@@ -85,6 +85,8 @@ for i in range(len(date_intervals) - 1):
 
     hour.loc[len(hour)] = new_row
 
+print(hour)
+sys.exit()
 #add the wake period
 hour['WP'] = hour['date'].map(WP)
 print(hour)

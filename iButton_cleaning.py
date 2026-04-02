@@ -34,67 +34,36 @@ def get_duration(duration):
     return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
 
 # input the directory to the CBT_Reorganized CSV file
-filepath = "C:/Users/camden/Downloads/FACT_CBT_cleaned/Preprocessed/FACT_054_V2.csv"
+filepath = "C:/Users/camden/Downloads/FACT_055_V1_WP3.csv"
 df = pd.read_csv(filepath)
 
-# define the start/end dates for the in-lab -- this can be found in the Participant Info sheet
-start = '11/2/2025'
-end = '11/11/2025'
+df = df[df['Date hour C'] == df['Date hour W']]
 
-#OP_wake = '7:00' + timedelta(hours=5)
-#print(OP_wake)
+df = df.rename(columns={'Date hour C': 'Date hour'})
+df = df.drop(['Date hour W'], axis = 1)
+
+# make a df for each iButton in order to make time stamps later
+Cdf = df.drop(['Wrist'], axis = 1)
+Wdf = df.drop(['Clavicle'], axis = 1)
 
 # Drop rows with no data (there tend to be multiple empty rows at the bottom of these excel sheets)
-df = df.dropna(how = 'all')
-
+Cdf = Cdf.dropna(how = 'all')
+Wdf = Wdf.dropna(how = 'all')
 # change the 'Date' column from dtype object to dtype datetime64[ns]
-df['Date'] = pd.to_datetime(df['Date'])
-df['Date hour'] = pd.to_datetime(df['Date hour'], format = '%H:%M')
+Cdf['Date'] = pd.to_datetime(Cdf['Date'])
+Cdf['Date hour'] = pd.to_datetime(Cdf['Date hour'], format = '%H:%M')
 
-'''
-time = df['Date hour']
-hmph = time[0]
-
-print((hmph + timedelta(hours=9)).strftime('%H:%M:%S'))
-
-print(hmph)
-
-print(datetime.strftime(time, format = '%H:%M'))
-
-df['Date hour'] = datetime.strftime(df['Date hour'])
-print(df['Date hour'])
-'''
+Wdf['Date'] = pd.to_datetime(Wdf['Date'])
+Wdf['Date hour'] = pd.to_datetime(Wdf['Date hour'], format = '%H:%M')
 # Create a timestamp column, this will help with calculating elapsed time later on
-df['Time Stamp'] = df['Date'].astype(str) + ' ' + df['Date hour'].astype(str)
-df['Time Stamp'] = pd.to_datetime(df['Time Stamp'])
+Cdf['Time Stamp'] = Cdf['Date'].astype(str) + ' ' + Cdf['Date hour'].astype(str)
+Cdf['Time Stamp'] = pd.to_datetime(Cdf['Time Stamp'])
 
-# create a variable with only the correct in-lab date range
-correct_range = (df['Date'] >= start) & (df['Date'] <= end)
-
-df['CorrectDate'] = correct_range
-
-'''
-WP1_start = '7:00'
-WP_end = '16:00'
-WP1_wake = (df['Date hour'] >= WP1_start) & (df['Date hour'] <= WP1_end)
-print(WP1_wake)
-'''
-
-# drop all rows that are not from the in-lab
-df = df.drop(df[df.CorrectDate == False].index)
-
-# drop all rows that have no temperature data -- comment this out if the variable was not included
-df = df.rename(columns = {'Temperature':'CTEMP'})
-df = df.drop(df.loc[df['CTEMP'] == '-- , -- '].index)
-
-# drop rows that won't be needed for future analysis -- comment this out if the variable was not included
-df = df.drop(['State', 'CorrectDate'], axis = 1)
-
-# sort dates chronologically
-df = df.sort_values(by = ['Date', 'Date hour'])
+Wdf['Time Stamp'] = Wdf['Date'].astype(str) + ' ' + Wdf['Date hour'].astype(str)
+Wdf['Time Stamp'] = pd.to_datetime(Wdf['Time Stamp'])
 
 #Create the 'elapsed_time_hrs' variable -- this is needed to use the NOSA program
-time = df['Time Stamp'].tolist()
+time = Cdf['Time Stamp'].tolist()
 time_elapsed = [0]
 for i in range(1, len(time)):
     # Calling the current index time and subtracting it by the first timestamp recorded for the data
@@ -115,18 +84,129 @@ for i in range(1, len(time)):
     time_elapsed.append(result)
 
 # Create the hours elapsed variable -- variable name should not be changed from what is already provided
-df['elapsed_time_hrs'] = time_elapsed
+Cdf['elapsed_time_hrs'] = time_elapsed
+
+time = Wdf['Time Stamp'].tolist()
+time_elapsed = [0]
+for i in range(1, len(time)):
+    # Calling the current index time and subtracting it by the first timestamp recorded for the data
+    start = time[0]
+    finish = time[i]
+    duration = (finish - start).total_seconds()
+
+    # Calculating how many hours have passed between the current time and the first recorded time
+    elapsed_hours = get_duration(duration)
+
+    # Converting time elapsed to a decimal
+    hours, minutes, seconds = elapsed_hours.split(':')
+    hours = int(hours)
+    minutes = int(minutes)
+    seconds = int(seconds)
+
+    result = hours + (minutes / 60) + (seconds / 3600)
+    time_elapsed.append(result)
+# Create the hours elapsed variable -- variable name should not be changed from what is already provided
+Wdf['elapsed_time_hrs'] = time_elapsed
+
+# create interval averages (this code averages the core temperature for every 10min of data).
+# change the 'interval_freq' variable for different time intervals
+start_index = Cdf['Time Stamp'].index[0]
+end_index = Cdf['Time Stamp'].index[-1]
+
+start_date = Cdf['Time Stamp'].at[start_index]
+end_date = Cdf['Time Stamp'].at[end_index]
+interval_freq = '10min'  # Hourly intervals
+
+date_intervals = pd.date_range(start=start_date, end=end_date, freq=interval_freq)
+
+hour = pd.DataFrame(columns = ['intervals', 'time', 'date', 'minutes elapsed', 'temp'])
+
+for i in range(len(date_intervals) - 1):
+    current_interval_start = date_intervals[i]
+    current_interval_end = date_intervals[i+1]
+
+    subset_df = Cdf[(Cdf['Time Stamp'] >= current_interval_start) & 
+                   (Cdf['Time Stamp'] < current_interval_end)]
+
+    if subset_df.empty:
+        continue
+
+    time_index = subset_df.index[0]
+    time = subset_df['Date hour'].at[time_index]
+
+    date_index = subset_df.index[0]
+    date = subset_df['Date'].at[date_index]
+
+    interval = f"{current_interval_start}, {current_interval_end}"
+    
+    index = i + 1
+    elapsed_time = index*10
+
+    hourly_avg = (subset_df.loc[:, 'Clavicle']).mean()
+  
+    new_row = {"intervals": interval, "time": time, "date": date, "minutes elapsed": elapsed_time, "temp": hourly_avg}
+
+    hour.loc[len(hour)] = new_row
+
+print(hour)
+
+start_index = Wdf['Time Stamp'].index[0]
+end_index = Wdf['Time Stamp'].index[-1]
+
+start_date = Wdf['Time Stamp'].at[start_index]
+end_date = Wdf['Time Stamp'].at[end_index]
+interval_freq = '10min'  # Hourly intervals
+
+date_intervals = pd.date_range(start=start_date, end=end_date, freq=interval_freq)
+
+Whour = pd.DataFrame(columns = ['intervals', 'time', 'date', 'minutes elapsed', 'temp'])
+
+for i in range(len(date_intervals) - 1):
+    current_interval_start = date_intervals[i]
+    current_interval_end = date_intervals[i+1]
+
+    subset_df = Wdf[(Wdf['Time Stamp'] >= current_interval_start) & 
+                   (Wdf['Time Stamp'] < current_interval_end)]
+
+    if subset_df.empty:
+        continue
+
+    time_index = subset_df.index[0]
+    time = subset_df['Date hour'].at[time_index]
+
+    date_index = subset_df.index[0]
+    date = subset_df['Date'].at[date_index]
+
+    interval = f"{current_interval_start}, {current_interval_end}"
+
+    index = i + 1
+    elapsed_time = index*10
+
+    hourly_avg = (subset_df.loc[:, 'Wrist']).mean()
+  
+    new_row = {"intervals": interval, "time": time, "date": date, "minutes elapsed": elapsed_time, "temp": hourly_avg}
+
+    Whour.loc[len(Whour)] = new_row
+
+hour = hour.rename(columns={'temp': 'Clavicle'})
+hour['Wrist'] = Whour['temp']
+
+df = hour
 
 # Drop variables that won't be necessary for data analysis
-df = df.drop(['Time Stamp', 'index'], axis = 1)
+df = df.drop(['intervals'], axis = 1)
+df['DPG'] = df['Wrist'] - df['Clavicle']
 
 # Enter the subject ID, should typically be 'FACT_0XX_VX'
-sub_id = 'FACT_054_V2'
+sub_id = 'FACT_055_V1'
 df['SUBJECT_CODE'] = sub_id
 
 #Rearrange columns
-df = df[['SUBJECT_CODE', 'Date', 'WP', 'Date hour', 'CTEMP', 'Placement', 'elapsed_time_hrs']]
+df = df.rename(columns={'time': 'Time', 'date': 'Date', 'minutes elapsed':'Minutes elapsed'})
+
+df = df[['SUBJECT_CODE', 'Date', 'Time', 'Minutes elapsed', 'Clavicle', 'Wrist', 'DPG']]
 print(df)
+
 # Convert the dataframe back to a csv file using the file location path. Remember to use the path or else the file will go into the github repo 
 # file naming scheme should be 'FACT_0XX_VX_CBT_cleaned' (change for SAM as needed)
-df.to_csv("C:/Users/camden/Downloads/FACT_CBT_cleaned/CLEANED/FACT_054_V2_cleaned.csv", index = False)
+df.to_csv("C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/FACT_055_V1_WP3_cleaned.csv", index = False)
