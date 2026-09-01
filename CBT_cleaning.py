@@ -14,7 +14,7 @@ import time
 
 # **BEFORE inputting the data into this script, make sure the csv file has the following features:
 # FIVE columns: 'index', 'Date hour' (change to 13:30 Time formatting), 
-# 'Date' (copied from the 'Date hour' column and reformatted using Date, m/hh/yyyy), 'Temperature', & 'State' (if the data has already been cleaned, don't include the 'State' variable)
+# 'Date' (copied from the 'Date hour' column and reformatted using Date, mm/dd/yyyy), 'Temperature', & 'State' (if the data has already been cleaned, don't include the 'State' variable)
 # Make sure there are no spaces in front of variable names
 
 #The original csv will allocate different saved pdfs of data into different columns. 
@@ -41,9 +41,6 @@ df = pd.read_csv(filepath)
 start = '11/2/2025'
 end = '11/11/2025'
 
-#OP_wake = '7:00' + timedelta(hours=5)
-#print(OP_wake)
-
 # Drop rows with no data (there tend to be multiple empty rows at the bottom of these excel sheets)
 df = df.dropna(how = 'all')
 
@@ -51,19 +48,7 @@ df = df.dropna(how = 'all')
 df['Date'] = pd.to_datetime(df['Date'])
 df['Date hour'] = pd.to_datetime(df['Date hour'], format = '%H:%M')
 
-'''
-time = df['Date hour']
-hmph = time[0]
 
-print((hmph + timedelta(hours=9)).strftime('%H:%M:%S'))
-
-print(hmph)
-
-print(datetime.strftime(time, format = '%H:%M'))
-
-df['Date hour'] = datetime.strftime(df['Date hour'])
-print(df['Date hour'])
-'''
 # Create a timestamp column, this will help with calculating elapsed time later on
 df['Time Stamp'] = df['Date'].astype(str) + ' ' + df['Date hour'].astype(str)
 df['Time Stamp'] = pd.to_datetime(df['Time Stamp'])
@@ -72,13 +57,6 @@ df['Time Stamp'] = pd.to_datetime(df['Time Stamp'])
 correct_range = (df['Date'] >= start) & (df['Date'] <= end)
 
 df['CorrectDate'] = correct_range
-
-'''
-WP1_start = '7:00'
-WP_end = '16:00'
-WP1_wake = (df['Date hour'] >= WP1_start) & (df['Date hour'] <= WP1_end)
-print(WP1_wake)
-'''
 
 # drop all rows that are not from the in-lab
 df = df.drop(df[df.CorrectDate == False].index)

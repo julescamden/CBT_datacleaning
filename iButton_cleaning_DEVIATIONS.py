@@ -12,6 +12,8 @@ from datetime import datetime
 import sys
 import time
 
+# Use this script when there are deviations in the processed data (such as no data for WP5)
+
 # **BEFORE inputting the data into this script, make sure the csv file has the following features:
 # FIVE columns: 'index', 'Date hour' (change to 13:30 Time formatting), 
 # 'Date' (copied from the 'Date hour' column and reformatted using Date, m/hh/yyyy), 'Temperature', & 'State' (if the data has already been cleaned, don't include the 'State' variable)
@@ -34,139 +36,214 @@ def get_duration(duration):
     return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
 
 # input the directory to the CBT_Reorganized CSV file
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP3_C.csv"
+# WAKE PERIOD 1
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP1_C.csv"
+WP1_C = pd.read_csv(filepath)
+WP1_C = WP1_C.rename(columns={'Value': 'Clavicle'})
+WP1_C = WP1_C.rename(columns={'Time': 'Date hour'})
+WP1_C = WP1_C.rename(columns={'Date/Time': 'Date'})
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP1_W.csv"
+WP1_W = pd.read_csv(filepath)
+WP1_W = WP1_W.rename(columns={'Value': 'Wrist'})
+WP1_W = WP1_W.rename(columns={'Time': 'Date hour'})
+WP1_W = WP1_W.rename(columns={'Date/Time': 'Date'})
+
+WP1 = pd.merge(WP1_C, WP1_W, how='outer')
+
+'''
+# WAKE PERIOD 3
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP3_C.csv"
 WP3_C = pd.read_csv(filepath)
 WP3_C = WP3_C.rename(columns={'Value': 'Clavicle'})
 WP3_C = WP3_C.rename(columns={'Time': 'Date hour'})
 WP3_C = WP3_C.rename(columns={'Date/Time': 'Date'})
 
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP3_W.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP3_W.csv"
 WP3_W = pd.read_csv(filepath)
 WP3_W = WP3_W.rename(columns={'Value': 'Wrist'})
 WP3_W = WP3_W.rename(columns={'Time': 'Date hour'})
 WP3_W = WP3_W.rename(columns={'Date/Time': 'Date'})
 
-WP3 = pd.merge(WP3_C, WP3_W, how='inner')
+WP3 = pd.merge(WP3_C, WP3_W, how='outer')
 
 # WAKE PERIOD 4
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP4_C.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP4_C.csv"
 WP4_C = pd.read_csv(filepath)
 WP4_C = WP4_C.rename(columns={'Value': 'Clavicle'})
 WP4_C = WP4_C.rename(columns={'Time': 'Date hour'})
 WP4_C = WP4_C.rename(columns={'Date/Time': 'Date'})
 
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP4_W.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP4_W.csv"
 WP4_W = pd.read_csv(filepath)
 WP4_W = WP4_W.rename(columns={'Value': 'Wrist'})
 WP4_W = WP4_W.rename(columns={'Time': 'Date hour'})
 WP4_W = WP4_W.rename(columns={'Date/Time': 'Date'})
 
-WP4 = pd.merge(WP4_C, WP4_W, how='inner')
-
+WP4 = pd.merge(WP4_C, WP4_W, how='outer')
+'''
 # WAKE PERIOD 5
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP5_C.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP5_C.csv"
 WP5_C = pd.read_csv(filepath)
 WP5_C = WP5_C.rename(columns={'Value': 'Clavicle'})
 WP5_C = WP5_C.rename(columns={'Time': 'Date hour'})
 WP5_C = WP5_C.rename(columns={'Date/Time': 'Date'})
 
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP5_W.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP5_W.csv"
 WP5_W = pd.read_csv(filepath)
 WP5_W = WP5_W.rename(columns={'Value': 'Wrist'})
 WP5_W = WP5_W.rename(columns={'Time': 'Date hour'})
 WP5_W = WP5_W.rename(columns={'Date/Time': 'Date'})
 
-WP5 = pd.merge(WP5_C, WP5_W, how='inner')
+WP5 = pd.merge(WP5_C, WP5_W, how='outer')
 
 # WAKE PERIOD 6
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP6_C.csv"
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP6_C.csv"
 WP6_C = pd.read_csv(filepath)
 WP6_C = WP6_C.rename(columns={'Value': 'Clavicle'})
 WP6_C = WP6_C.rename(columns={'Time': 'Date hour'})
 WP6_C = WP6_C.rename(columns={'Date/Time': 'Date'})
 
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP6_W.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP6_W.csv"
 WP6_W = pd.read_csv(filepath)
 WP6_W = WP6_W.rename(columns={'Value': 'Wrist'})
 WP6_W = WP6_W.rename(columns={'Time': 'Date hour'})
 WP6_W = WP6_W.rename(columns={'Date/Time': 'Date'})
 
-WP6 = pd.merge(WP6_C, WP6_W, how='inner')
+WP6 = pd.merge(WP6_C, WP6_W, how='outer')
 
 # WAKE PERIOD 7
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP7_C.csv"
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP7_C.csv"
 WP7_C = pd.read_csv(filepath)
 WP7_C = WP7_C.rename(columns={'Value': 'Clavicle'})
 WP7_C = WP7_C.rename(columns={'Time': 'Date hour'})
 WP7_C = WP7_C.rename(columns={'Date/Time': 'Date'})
 
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP7_W.csv"
+'''
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP7_C_5.csv"
+WP7_C1 = pd.read_csv(filepath)
+WP7_C1 = WP7_C1.rename(columns={'Value': 'Clavicle'})
+WP7_C1 = WP7_C1.rename(columns={'Time': 'Date hour'})
+WP7_C1 = WP7_C1.rename(columns={'Date/Time': 'Date'})
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP7_C_6.csv"
+WP7_C2 = pd.read_csv(filepath)
+WP7_C2 = WP7_C2.rename(columns={'Value': 'Clavicle'})
+WP7_C2 = WP7_C2.rename(columns={'Time': 'Date hour'})
+WP7_C2 = WP7_C2.rename(columns={'Date/Time': 'Date'})
+
+WP7_C = pd.merge(WP7_C1, WP7_C2, how='outer')
+
+'''
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP7_W.csv"
 WP7_W = pd.read_csv(filepath)
 WP7_W = WP7_W.rename(columns={'Value': 'Wrist'})
 WP7_W = WP7_W.rename(columns={'Time': 'Date hour'})
 WP7_W = WP7_W.rename(columns={'Date/Time': 'Date'})
 
-WP7 = pd.merge(WP7_C, WP7_W, how='inner')
-
 '''
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP7_W_5.csv"
+WP7_W1 = pd.read_csv(filepath)
+WP7_W1 = WP7_W1.rename(columns={'Value': 'Wrist'})
+WP7_W1 = WP7_W1.rename(columns={'Time': 'Date hour'})
+WP7_W1 = WP7_W1.rename(columns={'Date/Time': 'Date'})
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP7_W_6.csv"
+WP7_W2 = pd.read_csv(filepath)
+WP7_W2 = WP7_W2.rename(columns={'Value': 'Wrist'})
+WP7_W2 = WP7_W2.rename(columns={'Time': 'Date hour'})
+WP7_W2 = WP7_W2.rename(columns={'Date/Time': 'Date'})
+
+WP7_W = pd.merge(WP7_W1, WP7_W2, how='outer')
+'''
+WP7 = pd.merge(WP7_C, WP7_W, how='outer')
+
 # WAKE PERIOD 8
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP8_C.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP8_C.csv"
 WP8_C = pd.read_csv(filepath)
 WP8_C = WP8_C.rename(columns={'Value': 'Clavicle'})
 WP8_C = WP8_C.rename(columns={'Time': 'Date hour'})
 WP8_C = WP8_C.rename(columns={'Date/Time': 'Date'})
 
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP8_W.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP8_C_1.csv"
+WP8_C1 = pd.read_csv(filepath)
+WP8_C1 = WP8_C1.rename(columns={'Value': 'Clavicle'})
+WP8_C1 = WP8_C1.rename(columns={'Time': 'Date hour'})
+WP8_C1 = WP8_C1.rename(columns={'Date/Time': 'Date'})
+
+WP8_C = pd.merge(WP8_C, WP8_C1, how='outer')
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP8_W.csv"
 WP8_W = pd.read_csv(filepath)
 WP8_W = WP8_W.rename(columns={'Value': 'Wrist'})
 WP8_W = WP8_W.rename(columns={'Time': 'Date hour'})
 WP8_W = WP8_W.rename(columns={'Date/Time': 'Date'})
 
-WP8 = pd.merge(WP8_C, WP8_W, how='inner')
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP8_W_1.csv"
+WP8_W1 = pd.read_csv(filepath)
+WP8_W1 = WP8_W1.rename(columns={'Value': 'Wrist'})
+WP8_W1 = WP8_W1.rename(columns={'Time': 'Date hour'})
+WP8_W1 = WP8_W1.rename(columns={'Date/Time': 'Date'})
+
+WP8_W = pd.merge(WP8_W, WP8_W1, how='outer')
+
+WP8 = pd.merge(WP8_C, WP8_W, how='outer')
+
 '''
 # WAKE PERIOD 9
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP9_C1.csv"
-WP9_C1 = pd.read_csv(filepath)
-WP9_C1 = WP9_C1.rename(columns={'Value': 'Clavicle'})
-WP9_C1 = WP9_C1.rename(columns={'Time': 'Date hour'})
-WP9_C1 = WP9_C1.rename(columns={'Date/Time': 'Date'})
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP9_C.csv"
+WP9_C = pd.read_csv(filepath)
+WP9_C = WP9_C.rename(columns={'Value': 'Clavicle'})
+WP9_C = WP9_C.rename(columns={'Time': 'Date hour'})
+WP9_C = WP9_C.rename(columns={'Date/Time': 'Date'})
 
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP9_C2.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP9_C2.csv"
 WP9_C2 = pd.read_csv(filepath)
 WP9_C2 = WP9_C2.rename(columns={'Value': 'Clavicle'})
 WP9_C2 = WP9_C2.rename(columns={'Time': 'Date hour'})
 WP9_C2 = WP9_C2.rename(columns={'Date/Time': 'Date'})
 
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP9_W.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP9_W.csv"
 WP9_W = pd.read_csv(filepath)
 WP9_W = WP9_W.rename(columns={'Value': 'Wrist'})
 WP9_W = WP9_W.rename(columns={'Time': 'Date hour'})
 WP9_W = WP9_W.rename(columns={'Date/Time': 'Date'})
 
-WP9 = pd.merge(WP9_C1, WP9_C2, how='inner').merge(WP9_W, how='inner')
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP9_W2.csv"
+WP9_W2 = pd.read_csv(filepath)
+WP9_W2 = WP9_W2.rename(columns={'Value': 'Wrist'})
+WP9_W2 = WP9_W2.rename(columns={'Time': 'Date hour'})
+WP9_W2 = WP9_W2.rename(columns={'Date/Time': 'Date'})
+
+WP9 = pd.merge(WP9_C, WP9_W, how='outer')
 
 # WAKE PERIOD 10
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP10_C.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP10_C.csv"
 WP10_C = pd.read_csv(filepath)
 WP10_C = WP10_C.rename(columns={'Value': 'Clavicle'})
 WP10_C = WP10_C.rename(columns={'Time': 'Date hour'})
 WP10_C = WP10_C.rename(columns={'Date/Time': 'Date'})
 
-filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V2/iButtons/FACT_054_V2_WP10_W.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_007/V1/iButtons/FACT_007_V1_WP10_W.csv"
 WP10_W = pd.read_csv(filepath)
 WP10_W = WP10_W.rename(columns={'Value': 'Wrist'})
 WP10_W = WP10_W.rename(columns={'Time': 'Date hour'})
 WP10_W = WP10_W.rename(columns={'Date/Time': 'Date'})
 
-WP10 = pd.merge(WP10_C, WP10_W, how='inner')
-
+WP10 = pd.merge(WP10_C, WP10_W, how='outer')
+'''
 # Combine all wake periods
-df = pd.concat([WP3, WP4, WP5, WP6, WP7, WP9, WP10])
+df = pd.concat([WP1, WP5, WP6, WP7, WP8])
 
 # Drop rows with no data (there tend to be multiple empty rows at the bottom of these excel sheets)
+'''
 df = df.dropna(how = 'all')
 df = df.query("Clavicle > 22")
 df = df.query("Wrist > 22")
+'''
+
 
 # change the 'Date' column from dtype object to dtype datetime64[ns]
 #df['Date'] = pd.to_datetime(df['Date'])
@@ -199,6 +276,7 @@ for i in range(1, len(time)):
 
 # Create the hours elapsed variable -- variable name should not be changed from what is already provided
 df['elapsed_time_hrs'] = time_elapsed
+
 
 # create interval averages (this code averages the core temperature for every 10min of data).
 # change the 'interval_freq' variable for different time intervals
@@ -246,19 +324,20 @@ for i in range(len(date_intervals) - 1):
 df = hour
 
 # Add WP
-WP1 = '11/2/2025'
-WP2 = '11/3/2025'
-WP3 = '11/4/2025'
-WP4 = '11/5/2025'
-WP5 = '11/6/2025'
-WP6 = '11/7/2025'
-WP7 = '11/8/2025'
-WP8 = '11/9/2025'
-WP9 = '11/10/2025'
-WP10 = '11/11/2025'
+WP1 = '3/27/2022'
+#WP2 = '3/28/2022'
+#WP3 = '3/29/2022'
+#WP4 = '3/30/2022'
+WP5 = '3/31/2022'
+WP6 = '4/1/2022'
+WP7 = '4/2/2022'
+WP8 = '4/3/2022'
+#WP9 = '4/4/2022'
+#WP10 = '4/5/2022'
 
-WP = {WP1: 'WP1', WP2: 'WP2', WP3: 'WP3', WP4: 'WP4', WP5: 'WP5', 
-WP6: 'WP6', WP7: 'WP7', WP8: 'WP8', WP9: 'WP9', WP10: 'WP10'}
+WP = {WP1: 'WP1', WP5: 'WP5', WP6: 'WP6', WP7: 'WP7', WP8: 'WP8'}
+
+# , WP2: 'WP2', WP3: 'WP3', WP4: 'WP4', WP9: 'WP9', WP10: 'WP10'
 
 df['WP'] = df['date'].map(WP)
 
@@ -267,15 +346,17 @@ df = df.drop(['intervals'], axis = 1)
 df['DPG'] = df['wrist'] - df['clavicle']
 
 # Enter the subject ID, should typically be 'FACT_0XX_VX'
-sub_id = 'FACT_054_V2'
+sub_id = 'FACT_007_V1'
 df['SUBJECT_CODE'] = sub_id
+diet = 'Low Fat'
+df['Diet'] = diet
 
 #Rearrange columns
 df = df.rename(columns={'time': 'Time', 'date': 'Date', 'minutes elapsed':'Minutes elapsed', 'clavicle': 'Clavicle', 'wrist': 'Wrist'})
 
-df = df[['SUBJECT_CODE', 'Date', 'Time', 'WP', 'Minutes elapsed', 'Clavicle', 'Wrist', 'DPG']]
+df = df[['SUBJECT_CODE', 'Diet', 'Date', 'Time', 'WP', 'Minutes elapsed', 'Clavicle', 'Wrist', 'DPG']]
 print(df)
 
 # Convert the dataframe back to a csv file using the file location path. Remember to use the path or else the file will go into the github repo 
 # file naming scheme should be 'FACT_0XX_VX_CBT_cleaned' (change for SAM as needed)
-df.to_csv("C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Cleaned Data/FACT_054/V2/FACT_054_V2_iButtons_cleaned.csv", index = False)
+df.to_csv("C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Cleaned_Data/FACT_007/V1/FACT_007_V1_iButtons_cleaned.csv", index = False)
