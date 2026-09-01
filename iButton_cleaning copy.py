@@ -34,36 +34,85 @@ def get_duration(duration):
     return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
 
 # input the directory to the CBT_Reorganized CSV file
-filepath = "C:/Users/camden/Downloads/iButtons/iButtons/FACT_054_V1_WP3_C2.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP3_C.csv"
 WP3_C = pd.read_csv(filepath)
 WP3_C = WP3_C.rename(columns={'Date hour C': 'Date hour'})
-print(WP3_C)
 
-filepath = "C:/Users/camden/Downloads/iButtons/iButtons/FACT_054_V1_WP3_W2.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP3_W.csv"
 WP3_W = pd.read_csv(filepath)
 WP3_W = WP3_W.rename(columns={'Date hour W': 'Date hour'})
-print(WP3_W)
 
 WP3 = pd.merge(WP3_C, WP3_W, how='inner')
-print(WP3)
 
 # WAKE PERIOD 4
-filepath = "C:/Users/camden/Downloads/iButtons/iButtons/FACT_054_V1_WP4_C1.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP4_C.csv"
 WP4_C = pd.read_csv(filepath)
-print(WP4_C)
+WP4_C = WP4_C.rename(columns={'Date hour C': 'Date hour'})
 
-filepath = "C:/Users/camden/Downloads/iButtons/iButtons/FACT_054_V1_WP4_W1.csv"
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP4_W.csv"
 WP4_W = pd.read_csv(filepath)
-print(WP4_W)
+WP4_W = WP4_W.rename(columns={'Date hour W': 'Date hour'})
 
 WP4 = pd.merge(WP4_C, WP4_W, how='inner')
-print(WP4)
-sys.exit()
 
-df = df[df['Date hour C'] == df['Date hour W']]
+# WAKE PERIOD 5
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP5_C.csv"
+WP5_C = pd.read_csv(filepath)
 
-df = df.rename(columns={'Date hour C': 'Date hour'})
-df = df.drop(['Date hour W'], axis = 1)
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP5_W.csv"
+WP5_W = pd.read_csv(filepath)
+
+WP5 = pd.merge(WP5_C, WP5_W, how='inner')
+
+# WAKE PERIOD 6
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP6_C.csv"
+WP6_C = pd.read_csv(filepath)
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP6_W.csv"
+WP6_W = pd.read_csv(filepath)
+
+WP6 = pd.merge(WP6_C, WP6_W, how='inner')
+
+# WAKE PERIOD 7
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP7_C.csv"
+WP7_C = pd.read_csv(filepath)
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP7_W.csv"
+WP7_W = pd.read_csv(filepath)
+
+WP7 = pd.merge(WP7_C, WP7_W, how='inner')
+
+# WAKE PERIOD 8
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP8_C.csv"
+WP8_C = pd.read_csv(filepath)
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP8_W.csv"
+WP8_W = pd.read_csv(filepath)
+
+WP8 = pd.merge(WP8_C, WP8_W, how='inner')
+
+# WAKE PERIOD 9
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP9_C.csv"
+WP9_C = pd.read_csv(filepath)
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP9_W.csv"
+WP9_W = pd.read_csv(filepath)
+
+WP9 = pd.merge(WP9_C, WP9_W, how='inner')
+
+# WAKE PERIOD 10
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP10_C.csv"
+WP10_C = pd.read_csv(filepath)
+
+filepath = "C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/Processed Data/FACT_054/V1/FACT_054_V1_WP10_W.csv"
+WP10_W = pd.read_csv(filepath)
+
+WP10 = pd.merge(WP10_C, WP10_W, how='inner')
+
+# Combine all wake periods
+
+df = pd.concat([WP3, WP4, WP5, WP6, WP7, WP8, WP9, WP10])
+print(df)
 
 # make a df for each iButton in order to make time stamps later
 Cdf = df.drop(['Wrist'], axis = 1)
@@ -74,10 +123,8 @@ Cdf = Cdf.dropna(how = 'all')
 Wdf = Wdf.dropna(how = 'all')
 # change the 'Date' column from dtype object to dtype datetime64[ns]
 Cdf['Date'] = pd.to_datetime(Cdf['Date'])
-Cdf['Date hour'] = pd.to_datetime(Cdf['Date hour'], format = '%H:%M')
-
 Wdf['Date'] = pd.to_datetime(Wdf['Date'])
-Wdf['Date hour'] = pd.to_datetime(Wdf['Date hour'], format = '%H:%M')
+
 # Create a timestamp column, this will help with calculating elapsed time later on
 Cdf['Time Stamp'] = Cdf['Date'].astype(str) + ' ' + Cdf['Date hour'].astype(str)
 Cdf['Time Stamp'] = pd.to_datetime(Cdf['Time Stamp'])
@@ -211,25 +258,42 @@ for i in range(len(date_intervals) - 1):
 
     Whour.loc[len(Whour)] = new_row
 
-hour = hour.rename(columns={'temp': 'Clavicle'})
+hour = hour.rename(columns={'temp': 'Wrist'})
 hour['Wrist'] = Whour['temp']
 
 df = hour
+print(df)
+sys.exit()
+# Add WP
+WP1 = '2025-07-07'
+WP2 = '2025-07-08'
+WP3 = '2025-07-09'
+WP4 = '2025-07-10'
+WP5 = '2025-07-11'
+WP6 = '2025-07-12'
+WP7 = '2025-07-13'
+WP8 = '2025-07-14'
+WP9 =  '2025-07-15'
+WP10 = '2025-07-16'
 
+WP = {WP1: 'WP1', WP2: 'WP2', WP3: 'WP3', WP4: 'WP4', WP5: 'WP5', 
+WP6: 'WP6', WP7: 'WP7', WP8: 'WP8', WP9: 'WP9', WP10: 'WP10'}
+
+df['WP'] = df['Date'].map(WP)
 # Drop variables that won't be necessary for data analysis
 df = df.drop(['intervals'], axis = 1)
 df['DPG'] = df['Wrist'] - df['Clavicle']
 
 # Enter the subject ID, should typically be 'FACT_0XX_VX'
-sub_id = 'FACT_055_V1'
+sub_id = 'FACT_054_V1'
 df['SUBJECT_CODE'] = sub_id
 
 #Rearrange columns
 df = df.rename(columns={'time': 'Time', 'date': 'Date', 'minutes elapsed':'Minutes elapsed'})
 
-df = df[['SUBJECT_CODE', 'Date', 'Time', 'Minutes elapsed', 'Clavicle', 'Wrist', 'DPG']]
+df = df[['SUBJECT_CODE', 'Date', 'Time', 'WP', 'Minutes elapsed', 'Clavicle', 'Wrist', 'DPG']]
 print(df)
 
 # Convert the dataframe back to a csv file using the file location path. Remember to use the path or else the file will go into the github repo 
 # file naming scheme should be 'FACT_0XX_VX_CBT_cleaned' (change for SAM as needed)
-df.to_csv("C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/FACT_055_V1_WP3_cleaned.csv", index = False)
+#df.to_csv("C:/Users/camden/Downloads/FACT_Data_cleaned/iButtons/FACT_055_V1_WP3_cleaned.csv", index = False)
